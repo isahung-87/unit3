@@ -1,479 +1,497 @@
-import React, { useState, useEffect } from 'react';
-import { Volume2, BookOpen, Brain, PenTool, ArrowRight, RotateCcw, Check, Star, Mic, Play, Pause } from 'lucide-react';
-
-const App = () => {
-  const [activeTab, setActiveTab] = useState('story');
-  
-  // --- Data ---
-  const storyContent = {
-    title: "The Grey Parrot: A Brilliant Bird",
-    originalText: "The Grey Parrot is often known as the Einstein of the bird world. With its soft grey feathers and bright eyes, it is beautiful, but its brain is what makes it truly special. These parrots have sharp memories and can mimic human voices, copying not just words but also emotions. A famous parrot named Alex proved how smart they are by counting and recognizing colors. In African legends, these birds were seen as messengers to the gods. However, today they are in danger due to habitat loss and illegal trading. We need to protect these brilliant companions before it is too late.",
-    translation: "灰鸚鵡常被稱為鳥類界的愛因斯坦。牠們擁有柔軟的灰色羽毛和明亮的眼睛，外表美麗，但真正特別的是牠們的大腦。這些鸚鵡記憶力極佳，能模仿人類的聲音，不僅能複製詞彙，還能模仿情感。一隻名叫 Alex 的著名鸚鵡透過數數和辨識顏色證明了牠們有多聰明。在非洲傳說中，這些鳥被視為與神溝通的信使。然而，今天牠們因棲息地喪失和非法交易而面臨危險。我們需要在為時已晚之前保護這些聰明的夥伴。"
-  };
-
-  const vocabList = [
-    { id: 1, word: "Mimic", part: "v.", def: "To copy the way someone speaks or moves.", zh: "模仿" },
-    { id: 2, word: "Capacity", part: "n.", def: "The ability to understand or do something.", zh: "能力；容量" },
-    { id: 3, word: "Ritual", part: "n.", def: "A ceremony that is always performed in the same way.", zh: "儀式" },
-    { id: 4, word: "Habitat", part: "n.", def: "The natural home of an animal or plant.", zh: "棲息地" },
-    { id: 5, word: "Plummet", part: "v.", def: "To fall very quickly and suddenly.", zh: "暴跌；急遽下降" },
-    { id: 6, word: "Companion", part: "n.", def: "A person or animal you spend a lot of time with.", zh: "同伴" }
-  ];
-
-  const gapFillData = [
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parrot Pal - English Learning</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Import Map helps browser find React modules -->
+    <script type="importmap">
     {
-      id: 1,
-      sentence: "The grey parrot is famous for its ability to _____ human voices perfectly.",
-      answer: "mimic",
-      options: ["mimic", "plummet", "ritual"]
-    },
-    {
-      id: 2,
-      sentence: "Sadly, the number of wild parrots has started to _____ due to illegal trade.",
-      answer: "plummet",
-      options: ["capacity", "plummet", "habitat"]
-    },
-    {
-      id: 3,
-      sentence: "In some African cultures, feathers were used in a special _____.",
-      answer: "ritual",
-      options: ["companion", "ritual", "mimic"]
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.292.0"
+      }
     }
-  ];
-
-  const quizData = [
-    {
-      id: 1,
-      question: "What makes the grey parrot stand out most?",
-      options: [
-        "Its soft grey feathers.",
-        "Its ability to fly fast.",
-        "Its sharp memory and learning ability.",
-        "Its large size."
-      ],
-      correct: 2
-    },
-    {
-      id: 2,
-      question: "Who was Alex?",
-      options: [
-        "A scientist who studied birds.",
-        "A parrot that could count and recognize colors.",
-        "A god in African mythology.",
-        "A famous parrot trainer."
-      ],
-      correct: 1
-    },
-    {
-      id: 3,
-      question: "Why do grey parrots need protection?",
-      options: [
-        "They are losing their habitats.",
-        "They are migrating too often.",
-        "There are too many of them.",
-        "They are attacking other birds."
-      ],
-      correct: 0
-    }
-  ];
-
-  // --- Components ---
-
-  const Header = () => (
-    <div className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white p-6 rounded-b-3xl shadow-lg mb-6 relative overflow-hidden">
-      <div className="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
-        <Star size={150} />
-      </div>
-      <div className="relative z-10">
-        <h1 className="text-3xl font-bold flex items-center gap-3 mb-2">
-          <span className="text-4xl">🦜</span> Parrot Pal
-        </h1>
-        <p className="text-emerald-100 opacity-90">Learn English with the smartest bird in the world!</p>
-      </div>
-      
-      {/* Navigation Tabs */}
-      <div className="flex space-x-2 mt-6 overflow-x-auto pb-2 scrollbar-hide">
-        {[
-          { id: 'story', icon: BookOpen, label: 'Story & Audio' },
-          { id: 'vocab', icon: Brain, label: 'Flashcards' },
-          { id: 'gapfill', icon: PenTool, label: 'Gap Fill' },
-          { id: 'quiz', icon: Check, label: 'Quiz' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
-              activeTab === tab.id 
-                ? 'bg-white text-emerald-600 shadow-md transform scale-105' 
-                : 'bg-emerald-700/50 text-emerald-100 hover:bg-emerald-700'
-            }`}
-          >
-            <tab.icon size={16} />
-            {tab.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
-  const StorySection = () => {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [rate, setRate] = useState(0.9);
-    const [showTranslation, setShowTranslation] = useState(false);
-
-    const speak = () => {
-      if ('speechSynthesis' in window) {
-        if (isPlaying) {
-          window.speechSynthesis.cancel();
-          setIsPlaying(false);
-        } else {
-          const utterance = new SpeechSynthesisUtterance(storyContent.originalText);
-          utterance.lang = 'en-US';
-          utterance.rate = rate;
-          utterance.onend = () => setIsPlaying(false);
-          window.speechSynthesis.speak(utterance);
-          setIsPlaying(true);
+    </script>
+    
+    <!-- Babel allows us to write JSX in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        /* Custom Animations */
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-      } else {
-        alert("Sorry, your browser doesn't support text-to-speech!");
-      }
-    };
+        .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+        .animate-slide-up { animation: fade-in 0.5s ease-out forwards; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    
+    <div id="root"></div>
 
-    // Cleanup speech on unmount
-    useEffect(() => {
-      return () => {
-        window.speechSynthesis.cancel();
-      };
-    }, []);
+    <!-- Main Application Script -->
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { Volume2, BookOpen, Brain, PenTool, ArrowRight, RotateCcw, Check, Star, Mic, Play, Pause } from 'lucide-react';
 
-    return (
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-          <h2 className="text-2xl font-bold text-gray-800">{storyContent.title}</h2>
-          <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Speed:</span>
-            <input 
-              type="range" 
-              min="0.5" 
-              max="1.2" 
-              step="0.1" 
-              value={rate} 
-              onChange={(e) => setRate(parseFloat(e.target.value))}
-              className="w-24 accent-emerald-500"
-            />
-            <button 
-              onClick={speak}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-colors ${
-                isPlaying ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-emerald-500 text-white hover:bg-emerald-600'
-              }`}
-            >
-              {isPlaying ? <><Pause size={18} /> Stop</> : <><Play size={18} /> Listen</>}
-            </button>
-          </div>
-        </div>
-
-        <div className="prose prose-lg text-gray-700 leading-relaxed mb-6">
-          <p>{storyContent.originalText}</p>
-        </div>
-
-        <div className="border-t border-gray-100 pt-4">
-          <button 
-            onClick={() => setShowTranslation(!showTranslation)}
-            className="text-emerald-600 text-sm font-semibold hover:text-emerald-700 flex items-center gap-1"
-          >
-            {showTranslation ? 'Hide Translation' : 'Show Translation'} <ArrowRight size={14} className={showTranslation ? 'rotate-90 transition-transform' : 'transition-transform'} />
-          </button>
+        const App = () => {
+          const [activeTab, setActiveTab] = useState('story');
           
-          {showTranslation && (
-            <div className="mt-4 p-4 bg-emerald-50 rounded-lg text-gray-700 text-sm leading-relaxed animate-fade-in">
-              {storyContent.translation}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
+          // --- Data ---
+          const storyContent = {
+            title: "The Grey Parrot: A Brilliant Bird",
+            originalText: "The Grey Parrot is often known as the Einstein of the bird world. With its soft grey feathers and bright eyes, it is beautiful, but its brain is what makes it truly special. These parrots have sharp memories and can mimic human voices, copying not just words but also emotions. A famous parrot named Alex proved how smart they are by counting and recognizing colors. In African legends, these birds were seen as messengers to the gods. However, today they are in danger due to habitat loss and illegal trading. We need to protect these brilliant companions before it is too late.",
+            translation: "灰鸚鵡常被稱為鳥類界的愛因斯坦。牠們擁有柔軟的灰色羽毛和明亮的眼睛，外表美麗，但真正特別的是牠們的大腦。這些鸚鵡記憶力極佳，能模仿人類的聲音，不僅能複製詞彙，還能模仿情感。一隻名叫 Alex 的著名鸚鵡透過數數和辨識顏色證明了牠們有多聰明。在非洲傳說中，這些鳥被視為與神溝通的信使。然而，今天牠們因棲息地喪失和非法交易而面臨危險。我們需要在為時已晚之前保護這些聰明的夥伴。"
+          };
 
-  const FlashcardSection = () => {
-    const [flipped, setFlipped] = useState({});
+          const vocabList = [
+            { id: 1, word: "Mimic", part: "v.", def: "To copy the way someone speaks or moves.", zh: "模仿" },
+            { id: 2, word: "Capacity", part: "n.", def: "The ability to understand or do something.", zh: "能力；容量" },
+            { id: 3, word: "Ritual", part: "n.", def: "A ceremony that is always performed in the same way.", zh: "儀式" },
+            { id: 4, word: "Habitat", part: "n.", def: "The natural home of an animal or plant.", zh: "棲息地" },
+            { id: 5, word: "Plummet", part: "v.", def: "To fall very quickly and suddenly.", zh: "暴跌；急遽下降" },
+            { id: 6, word: "Companion", part: "n.", def: "A person or animal you spend a lot of time with.", zh: "同伴" }
+          ];
 
-    const toggleFlip = (id) => {
-      setFlipped(prev => ({ ...prev, [id]: !prev[id] }));
-    };
+          const gapFillData = [
+            {
+              id: 1,
+              sentence: "The grey parrot is famous for its ability to _____ human voices perfectly.",
+              answer: "mimic",
+              options: ["mimic", "plummet", "ritual"]
+            },
+            {
+              id: 2,
+              sentence: "Sadly, the number of wild parrots has started to _____ due to illegal trade.",
+              answer: "plummet",
+              options: ["capacity", "plummet", "habitat"]
+            },
+            {
+              id: 3,
+              sentence: "In some African cultures, feathers were used in a special _____.",
+              answer: "ritual",
+              options: ["companion", "ritual", "mimic"]
+            }
+          ];
 
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {vocabList.map((vocab) => (
-          <div 
-            key={vocab.id} 
-            onClick={() => toggleFlip(vocab.id)}
-            className="h-48 cursor-pointer perspective-1000 group"
-          >
-            <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d shadow-md rounded-xl ${flipped[vocab.id] ? 'rotate-y-180' : ''}`}>
-              {/* Front */}
-              <div className="absolute w-full h-full bg-white rounded-xl flex flex-col items-center justify-center backface-hidden border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors">
-                <span className="text-sm text-emerald-500 font-bold mb-2 uppercase tracking-wider">Word</span>
-                <h3 className="text-3xl font-bold text-gray-800">{vocab.word}</h3>
-                <p className="text-gray-400 mt-2 font-mono">{vocab.part}</p>
-                <span className="absolute bottom-3 text-xs text-gray-400">Tap to flip</span>
+          const quizData = [
+            {
+              id: 1,
+              question: "What makes the grey parrot stand out most?",
+              options: [
+                "Its soft grey feathers.",
+                "Its ability to fly fast.",
+                "Its sharp memory and learning ability.",
+                "Its large size."
+              ],
+              correct: 2
+            },
+            {
+              id: 2,
+              question: "Who was Alex?",
+              options: [
+                "A scientist who studied birds.",
+                "A parrot that could count and recognize colors.",
+                "A god in African mythology.",
+                "A famous parrot trainer."
+              ],
+              correct: 1
+            },
+            {
+              id: 3,
+              question: "Why do grey parrots need protection?",
+              options: [
+                "They are losing their habitats.",
+                "They are migrating too often.",
+                "There are too many of them.",
+                "They are attacking other birds."
+              ],
+              correct: 0
+            }
+          ];
+
+          // --- Components ---
+
+          const Header = () => (
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white p-6 rounded-b-3xl shadow-lg mb-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
+                <Star size={150} />
               </div>
-
-              {/* Back */}
-              <div className="absolute w-full h-full bg-emerald-600 text-white rounded-xl flex flex-col items-center justify-center backface-hidden rotate-y-180 p-4 text-center">
-                <span className="text-sm text-emerald-200 font-bold mb-2 uppercase tracking-wider">Definition</span>
-                <p className="text-lg font-medium mb-2">{vocab.zh}</p>
-                <p className="text-sm opacity-90">{vocab.def}</p>
+              <div className="relative z-10">
+                <h1 className="text-3xl font-bold flex items-center gap-3 mb-2">
+                  <span className="text-4xl">🦜</span> Parrot Pal
+                </h1>
+                <p className="text-emerald-100 opacity-90">Learn English with the smartest bird in the world!</p>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const GapFillSection = () => {
-    const [answers, setAnswers] = useState({});
-    const [results, setResults] = useState({});
-
-    const handleSelect = (questionId, option) => {
-      setAnswers(prev => ({ ...prev, [questionId]: option }));
-      // Clear result when changing answer
-      if (results[questionId] !== undefined) {
-        setResults(prev => {
-          const newRes = {...prev};
-          delete newRes[questionId];
-          return newRes;
-        });
-      }
-    };
-
-    const checkAnswer = (questionId, correct) => {
-      const isCorrect = answers[questionId] === correct;
-      setResults(prev => ({ ...prev, [questionId]: isCorrect }));
-    };
-
-    return (
-      <div className="space-y-6">
-        {gapFillData.map((item) => (
-          <div key={item.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <span className="bg-emerald-100 text-emerald-600 w-8 h-8 flex items-center justify-center rounded-full text-sm">
-                {item.id}
-              </span>
-              Fill in the blank
-            </h3>
-            
-            <p className="text-xl text-gray-700 mb-6 leading-relaxed font-medium">
-              {item.sentence.split('_____').map((part, index, arr) => (
-                <React.Fragment key={index}>
-                  {part}
-                  {index < arr.length - 1 && (
-                    <span className={`inline-block min-w-[100px] border-b-2 text-center px-2 font-bold transition-colors ${
-                      results[item.id] === true ? 'border-green-500 text-green-600' : 
-                      results[item.id] === false ? 'border-red-500 text-red-600' : 'border-gray-300 text-emerald-600'
-                    }`}>
-                      {answers[item.id] || "____"}
-                    </span>
-                  )}
-                </React.Fragment>
-              ))}
-            </p>
-
-            <div className="flex flex-wrap gap-3">
-              {item.options.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => handleSelect(item.id, option)}
-                  className={`px-4 py-2 rounded-lg border-2 font-medium transition-all ${
-                    answers[item.id] === option 
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700' 
-                      : 'border-gray-200 hover:border-emerald-300 text-gray-600'
-                  }`}
-                  disabled={results[item.id] === true}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-4 flex items-center gap-4">
-              <button
-                onClick={() => checkAnswer(item.id, item.answer)}
-                disabled={!answers[item.id] || results[item.id] === true}
-                className={`px-6 py-2 rounded-lg font-bold text-white transition-all ${
-                  !answers[item.id] || results[item.id] === true ? 'bg-gray-300 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600 shadow-md hover:shadow-lg'
-                }`}
-              >
-                Check Answer
-              </button>
               
-              {results[item.id] === true && (
-                <span className="flex items-center gap-1 text-green-600 font-bold animate-bounce">
-                  <Check size={20} /> Correct!
-                </span>
-              )}
-              {results[item.id] === false && (
-                <span className="flex items-center gap-1 text-red-500 font-bold">
-                  Try Again
-                </span>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const QuizSection = () => {
-    const [selected, setSelected] = useState({});
-    const [score, setScore] = useState(null);
-
-    const handleSelect = (qId, optionIdx) => {
-      if (score !== null) return; // Disable after submitting
-      setSelected(prev => ({ ...prev, [qId]: optionIdx }));
-    };
-
-    const submitQuiz = () => {
-      let correctCount = 0;
-      quizData.forEach(q => {
-        if (selected[q.id] === q.correct) correctCount++;
-      });
-      setScore(correctCount);
-    };
-
-    const resetQuiz = () => {
-      setSelected({});
-      setScore(null);
-    };
-
-    return (
-      <div className="space-y-6">
-        {quizData.map((q, idx) => {
-          const isSubmitted = score !== null;
-          const isCorrect = selected[q.id] === q.correct;
-          
-          return (
-            <div key={q.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">
-                <span className="text-emerald-500 mr-2">Q{idx + 1}.</span>
-                {q.question}
-              </h3>
-              
-              <div className="space-y-3">
-                {q.options.map((opt, optIdx) => {
-                  let btnClass = "w-full text-left p-4 rounded-xl border-2 transition-all ";
-                  
-                  if (isSubmitted) {
-                    if (optIdx === q.correct) btnClass += "border-green-500 bg-green-50 text-green-700 font-bold";
-                    else if (selected[q.id] === optIdx && optIdx !== q.correct) btnClass += "border-red-400 bg-red-50 text-red-700 opacity-70";
-                    else btnClass += "border-gray-100 text-gray-400";
-                  } else {
-                    if (selected[q.id] === optIdx) btnClass += "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm";
-                    else btnClass += "border-gray-100 hover:border-emerald-200 text-gray-600 hover:bg-gray-50";
-                  }
-
-                  return (
-                    <button
-                      key={optIdx}
-                      onClick={() => handleSelect(q.id, optIdx)}
-                      className={btnClass}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>{opt}</span>
-                        {isSubmitted && optIdx === q.correct && <Check size={20} />}
-                      </div>
-                    </button>
-                  );
-                })}
+              {/* Navigation Tabs */}
+              <div className="flex space-x-2 mt-6 overflow-x-auto pb-2 scrollbar-hide">
+                {[
+                  { id: 'story', icon: BookOpen, label: 'Story & Audio' },
+                  { id: 'vocab', icon: Brain, label: 'Flashcards' },
+                  { id: 'gapfill', icon: PenTool, label: 'Gap Fill' },
+                  { id: 'quiz', icon: Check, label: 'Quiz' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
+                      activeTab === tab.id 
+                        ? 'bg-white text-emerald-600 shadow-md transform scale-105' 
+                        : 'bg-emerald-700/50 text-emerald-100 hover:bg-emerald-700'
+                    }`}
+                  >
+                    <tab.icon size={16} />
+                    {tab.label}
+                  </button>
+                ))}
               </div>
             </div>
           );
-        })}
 
-        <div className="sticky bottom-4 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-emerald-100 flex items-center justify-between">
-          <div>
-            {score !== null ? (
-              <div className="text-lg font-bold">
-                Score: <span className={score === quizData.length ? "text-green-600 text-2xl" : "text-emerald-600 text-2xl"}>{score}</span> / {quizData.length}
-                {score === quizData.length && <span className="ml-2">🎉 Perfect!</span>}
+          const StorySection = () => {
+            const [isPlaying, setIsPlaying] = useState(false);
+            const [rate, setRate] = useState(0.9);
+            const [showTranslation, setShowTranslation] = useState(false);
+
+            const speak = () => {
+              if ('speechSynthesis' in window) {
+                if (isPlaying) {
+                  window.speechSynthesis.cancel();
+                  setIsPlaying(false);
+                } else {
+                  const utterance = new SpeechSynthesisUtterance(storyContent.originalText);
+                  utterance.lang = 'en-US';
+                  utterance.rate = rate;
+                  utterance.onend = () => setIsPlaying(false);
+                  window.speechSynthesis.speak(utterance);
+                  setIsPlaying(true);
+                }
+              } else {
+                alert("Sorry, your browser doesn't support text-to-speech!");
+              }
+            };
+
+            useEffect(() => {
+              return () => {
+                window.speechSynthesis.cancel();
+              };
+            }, []);
+
+            return (
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                  <h2 className="text-2xl font-bold text-gray-800">{storyContent.title}</h2>
+                  <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Speed:</span>
+                    <input 
+                      type="range" 
+                      min="0.5" 
+                      max="1.2" 
+                      step="0.1" 
+                      value={rate} 
+                      onChange={(e) => setRate(parseFloat(e.target.value))}
+                      className="w-24 accent-emerald-500"
+                    />
+                    <button 
+                      onClick={speak}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-colors ${
+                        isPlaying ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                      }`}
+                    >
+                      {isPlaying ? <><Pause size={18} /> Stop</> : <><Play size={18} /> Listen</>}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="prose prose-lg text-gray-700 leading-relaxed mb-6">
+                  <p>{storyContent.originalText}</p>
+                </div>
+
+                <div className="border-t border-gray-100 pt-4">
+                  <button 
+                    onClick={() => setShowTranslation(!showTranslation)}
+                    className="text-emerald-600 text-sm font-semibold hover:text-emerald-700 flex items-center gap-1"
+                  >
+                    {showTranslation ? 'Hide Translation' : 'Show Translation'} <ArrowRight size={14} className={showTranslation ? 'rotate-90 transition-transform' : 'transition-transform'} />
+                  </button>
+                  
+                  {showTranslation && (
+                    <div className="mt-4 p-4 bg-emerald-50 rounded-lg text-gray-700 text-sm leading-relaxed animate-fade-in">
+                      {storyContent.translation}
+                    </div>
+                  )}
+                </div>
               </div>
-            ) : (
-              <span className="text-gray-500 text-sm">Select an answer for each question</span>
-            )}
-          </div>
-          
-          {score === null ? (
-            <button
-              onClick={submitQuiz}
-              disabled={Object.keys(selected).length !== quizData.length}
-              className={`px-6 py-2 rounded-xl font-bold text-white transition-all ${
-                Object.keys(selected).length !== quizData.length 
-                ? 'bg-gray-300 cursor-not-allowed' 
-                : 'bg-emerald-600 hover:bg-emerald-700 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
-              }`}
-            >
-              Submit Quiz
-            </button>
-          ) : (
-            <button
-              onClick={resetQuiz}
-              className="flex items-center gap-2 px-6 py-2 rounded-xl font-bold bg-gray-800 text-white hover:bg-gray-900 transition-all shadow-lg"
-            >
-              <RotateCcw size={18} /> Retry
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  };
+            );
+          };
 
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans pb-10">
-      <div className="max-w-3xl mx-auto px-4 pt-4">
-        <Header />
-        
-        <main className="animate-slide-up">
-          {activeTab === 'story' && <StorySection />}
-          {activeTab === 'vocab' && <FlashcardSection />}
-          {activeTab === 'gapfill' && <GapFillSection />}
-          {activeTab === 'quiz' && <QuizSection />}
-        </main>
+          const FlashcardSection = () => {
+            const [flipped, setFlipped] = useState({});
 
-        <footer className="mt-12 text-center text-gray-400 text-sm">
-          <p>© 2025 Parrot Pal Learning. Based on "The Grey Parrot".</p>
-        </footer>
-      </div>
+            const toggleFlip = (id) => {
+              setFlipped(prev => ({ ...prev, [id]: !prev[id] }));
+            };
 
-      <style jsx global>{`
-        .rotate-y-180 {
-          transform: rotateY(180deg);
-        }
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        .transform-style-3d {
-          transform-style: preserve-3d;
-        }
-        .backface-hidden {
-          backface-visibility: hidden;
-        }
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out forwards;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-      `}</style>
-    </div>
-  );
-};
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {vocabList.map((vocab) => (
+                  <div 
+                    key={vocab.id} 
+                    onClick={() => toggleFlip(vocab.id)}
+                    className="h-48 cursor-pointer perspective-1000 group"
+                  >
+                    <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d shadow-md rounded-xl ${flipped[vocab.id] ? 'rotate-y-180' : ''}`}>
+                      {/* Front */}
+                      <div className="absolute w-full h-full bg-white rounded-xl flex flex-col items-center justify-center backface-hidden border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors">
+                        <span className="text-sm text-emerald-500 font-bold mb-2 uppercase tracking-wider">Word</span>
+                        <h3 className="text-3xl font-bold text-gray-800">{vocab.word}</h3>
+                        <p className="text-gray-400 mt-2 font-mono">{vocab.part}</p>
+                        <span className="absolute bottom-3 text-xs text-gray-400">Tap to flip</span>
+                      </div>
 
-export default App;
+                      {/* Back */}
+                      <div className="absolute w-full h-full bg-emerald-600 text-white rounded-xl flex flex-col items-center justify-center backface-hidden rotate-y-180 p-4 text-center">
+                        <span className="text-sm text-emerald-200 font-bold mb-2 uppercase tracking-wider">Definition</span>
+                        <p className="text-lg font-medium mb-2">{vocab.zh}</p>
+                        <p className="text-sm opacity-90">{vocab.def}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          };
+
+          const GapFillSection = () => {
+            const [answers, setAnswers] = useState({});
+            const [results, setResults] = useState({});
+
+            const handleSelect = (questionId, option) => {
+              setAnswers(prev => ({ ...prev, [questionId]: option }));
+              if (results[questionId] !== undefined) {
+                setResults(prev => {
+                  const newRes = {...prev};
+                  delete newRes[questionId];
+                  return newRes;
+                });
+              }
+            };
+
+            const checkAnswer = (questionId, correct) => {
+              const isCorrect = answers[questionId] === correct;
+              setResults(prev => ({ ...prev, [questionId]: isCorrect }));
+            };
+
+            return (
+              <div className="space-y-6">
+                {gapFillData.map((item) => (
+                  <div key={item.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                      <span className="bg-emerald-100 text-emerald-600 w-8 h-8 flex items-center justify-center rounded-full text-sm">
+                        {item.id}
+                      </span>
+                      Fill in the blank
+                    </h3>
+                    
+                    <p className="text-xl text-gray-700 mb-6 leading-relaxed font-medium">
+                      {item.sentence.split('_____').map((part, index, arr) => (
+                        <React.Fragment key={index}>
+                          {part}
+                          {index < arr.length - 1 && (
+                            <span className={`inline-block min-w-[100px] border-b-2 text-center px-2 font-bold transition-colors ${
+                              results[item.id] === true ? 'border-green-500 text-green-600' : 
+                              results[item.id] === false ? 'border-red-500 text-red-600' : 'border-gray-300 text-emerald-600'
+                            }`}>
+                              {answers[item.id] || "____"}
+                            </span>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </p>
+
+                    <div className="flex flex-wrap gap-3">
+                      {item.options.map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => handleSelect(item.id, option)}
+                          className={`px-4 py-2 rounded-lg border-2 font-medium transition-all ${
+                            answers[item.id] === option 
+                              ? 'border-emerald-500 bg-emerald-50 text-emerald-700' 
+                              : 'border-gray-200 hover:border-emerald-300 text-gray-600'
+                          }`}
+                          disabled={results[item.id] === true}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="mt-4 flex items-center gap-4">
+                      <button
+                        onClick={() => checkAnswer(item.id, item.answer)}
+                        disabled={!answers[item.id] || results[item.id] === true}
+                        className={`px-6 py-2 rounded-lg font-bold text-white transition-all ${
+                          !answers[item.id] || results[item.id] === true ? 'bg-gray-300 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600 shadow-md hover:shadow-lg'
+                        }`}
+                      >
+                        Check Answer
+                      </button>
+                      
+                      {results[item.id] === true && (
+                        <span className="flex items-center gap-1 text-green-600 font-bold animate-bounce">
+                          <Check size={20} /> Correct!
+                        </span>
+                      )}
+                      {results[item.id] === false && (
+                        <span className="flex items-center gap-1 text-red-500 font-bold">
+                          Try Again
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          };
+
+          const QuizSection = () => {
+            const [selected, setSelected] = useState({});
+            const [score, setScore] = useState(null);
+
+            const handleSelect = (qId, optionIdx) => {
+              if (score !== null) return;
+              setSelected(prev => ({ ...prev, [qId]: optionIdx }));
+            };
+
+            const submitQuiz = () => {
+              let correctCount = 0;
+              quizData.forEach(q => {
+                if (selected[q.id] === q.correct) correctCount++;
+              });
+              setScore(correctCount);
+            };
+
+            const resetQuiz = () => {
+              setSelected({});
+              setScore(null);
+            };
+
+            return (
+              <div className="space-y-6">
+                {quizData.map((q, idx) => {
+                  const isSubmitted = score !== null;
+                  
+                  return (
+                    <div key={q.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">
+                        <span className="text-emerald-500 mr-2">Q{idx + 1}.</span>
+                        {q.question}
+                      </h3>
+                      
+                      <div className="space-y-3">
+                        {q.options.map((opt, optIdx) => {
+                          let btnClass = "w-full text-left p-4 rounded-xl border-2 transition-all ";
+                          
+                          if (isSubmitted) {
+                            if (optIdx === q.correct) btnClass += "border-green-500 bg-green-50 text-green-700 font-bold";
+                            else if (selected[q.id] === optIdx && optIdx !== q.correct) btnClass += "border-red-400 bg-red-50 text-red-700 opacity-70";
+                            else btnClass += "border-gray-100 text-gray-400";
+                          } else {
+                            if (selected[q.id] === optIdx) btnClass += "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm";
+                            else btnClass += "border-gray-100 hover:border-emerald-200 text-gray-600 hover:bg-gray-50";
+                          }
+
+                          return (
+                            <button
+                              key={optIdx}
+                              onClick={() => handleSelect(q.id, optIdx)}
+                              className={btnClass}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span>{opt}</span>
+                                {isSubmitted && optIdx === q.correct && <Check size={20} />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <div className="sticky bottom-4 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-emerald-100 flex items-center justify-between">
+                  <div>
+                    {score !== null ? (
+                      <div className="text-lg font-bold">
+                        Score: <span className={score === quizData.length ? "text-green-600 text-2xl" : "text-emerald-600 text-2xl"}>{score}</span> / {quizData.length}
+                        {score === quizData.length && <span className="ml-2">🎉 Perfect!</span>}
+                      </div>
+                    ) : (
+                      <span className="text-gray-500 text-sm">Select an answer for each question</span>
+                    )}
+                  </div>
+                  
+                  {score === null ? (
+                    <button
+                      onClick={submitQuiz}
+                      disabled={Object.keys(selected).length !== quizData.length}
+                      className={`px-6 py-2 rounded-xl font-bold text-white transition-all ${
+                        Object.keys(selected).length !== quizData.length 
+                        ? 'bg-gray-300 cursor-not-allowed' 
+                        : 'bg-emerald-600 hover:bg-emerald-700 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
+                      }`}
+                    >
+                      Submit Quiz
+                    </button>
+                  ) : (
+                    <button
+                      onClick={resetQuiz}
+                      className="flex items-center gap-2 px-6 py-2 rounded-xl font-bold bg-gray-800 text-white hover:bg-gray-900 transition-all shadow-lg"
+                    >
+                      <RotateCcw size={18} /> Retry
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          };
+
+          return (
+            <div className="max-w-3xl mx-auto px-4 pt-4 pb-10">
+              <Header />
+              
+              <main className="animate-slide-up">
+                {activeTab === 'story' && <StorySection />}
+                {activeTab === 'vocab' && <FlashcardSection />}
+                {activeTab === 'gapfill' && <GapFillSection />}
+                {activeTab === 'quiz' && <QuizSection />}
+              </main>
+
+              <footer className="mt-12 text-center text-gray-400 text-sm">
+                <p>© 2025 Parrot Pal Learning. Based on "The Grey Parrot".</p>
+              </footer>
+            </div>
+          );
+        };
+
+        // Mount the app
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
