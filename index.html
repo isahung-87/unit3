@@ -46,10 +46,11 @@
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
-        import { Volume2, BookOpen, Brain, PenTool, ArrowRight, RotateCcw, Check, Star, Mic, Play, Pause } from 'lucide-react';
+        import { Volume2, BookOpen, Brain, PenTool, ArrowRight, RotateCcw, Check, Star, Mic, Play, Pause, Volume1 } from 'lucide-react';
 
         const App = () => {
-          const [activeTab, setActiveTab] = useState('story');
+          // Changed default tab to 'vocab' as requested
+          const [activeTab, setActiveTab] = useState('vocab');
           
           // --- Data ---
           const storyContent = {
@@ -58,27 +59,31 @@
             translation: "灰鸚鵡常被稱為鳥類界的愛因斯坦。牠們擁有柔軟的灰色羽毛和明亮的眼睛，外表美麗，但真正特別的是牠們的大腦。這些鸚鵡記憶力極佳，能模仿人類的聲音，不僅能複製詞彙，還能模仿情感。一隻名叫 Alex 的著名鸚鵡透過數數和辨識顏色證明了牠們有多聰明。在非洲傳說中，這些鳥被視為與神溝通的信使。然而，今天牠們因棲息地喪失和非法交易而面臨危險。我們需要在為時已晚之前保護這些聰明的夥伴。"
           };
 
+          // Updated Vocab List with the 9 specific words requested
           const vocabList = [
-            { id: 1, word: "Mimic", part: "v.", def: "To copy the way someone speaks or moves.", zh: "模仿" },
+            { id: 1, word: "Imitate", part: "v.", def: "To copy the way someone speaks or moves.", zh: "模仿" },
             { id: 2, word: "Capacity", part: "n.", def: "The ability to understand or do something.", zh: "能力；容量" },
-            { id: 3, word: "Ritual", part: "n.", def: "A ceremony that is always performed in the same way.", zh: "儀式" },
-            { id: 4, word: "Habitat", part: "n.", def: "The natural home of an animal or plant.", zh: "棲息地" },
-            { id: 5, word: "Plummet", part: "v.", def: "To fall very quickly and suddenly.", zh: "暴跌；急遽下降" },
-            { id: 6, word: "Companion", part: "n.", def: "A person or animal you spend a lot of time with.", zh: "同伴" }
+            { id: 3, word: "Spiritual", part: "adj.", def: "Relating to deep feelings and beliefs, often religious.", zh: "精神的；心靈的" },
+            { id: 4, word: "Ritual", part: "n.", def: "A ceremony that is always performed in the same way.", zh: "儀式" },
+            { id: 5, word: "Habitat", part: "n.", def: "The natural home of an animal or plant.", zh: "棲息地" },
+            { id: 6, word: "Beloved", part: "adj.", def: "Loved very much by someone.", zh: "摯愛的" },
+            { id: 7, word: "Companion", part: "n.", def: "A person or animal you spend a lot of time with.", zh: "同伴" },
+            { id: 8, word: "Serve as", part: "phr.", def: "To perform a particular function or role.", zh: "擔任；充當" },
+            { id: 9, word: "Stand out", part: "phr.", def: "To be very easy to see or notice.", zh: "突出；顯眼" }
           ];
 
           const gapFillData = [
             {
               id: 1,
               sentence: "The grey parrot is famous for its ability to _____ human voices perfectly.",
-              answer: "mimic",
-              options: ["mimic", "plummet", "ritual"]
+              answer: "imitate", // Updated to match new vocab
+              options: ["imitate", "plummet", "ritual"]
             },
             {
               id: 2,
-              sentence: "Sadly, the number of wild parrots has started to _____ due to illegal trade.",
-              answer: "plummet",
-              options: ["capacity", "plummet", "habitat"]
+              sentence: "Sadly, the number of wild parrots has started to drop due to _____ loss.",
+              answer: "habitat", // Updated to match new vocab
+              options: ["capacity", "spiritual", "habitat"]
             },
             {
               id: 3,
@@ -138,11 +143,11 @@
                 <p className="text-emerald-100 opacity-90">Learn English with the smartest bird in the world!</p>
               </div>
               
-              {/* Navigation Tabs */}
+              {/* Navigation Tabs - Reordered to put Vocab first */}
               <div className="flex space-x-2 mt-6 overflow-x-auto pb-2 scrollbar-hide">
                 {[
-                  { id: 'story', icon: BookOpen, label: 'Story & Audio' },
                   { id: 'vocab', icon: Brain, label: 'Flashcards' },
+                  { id: 'story', icon: BookOpen, label: 'Story & Audio' },
                   { id: 'gapfill', icon: PenTool, label: 'Gap Fill' },
                   { id: 'quiz', icon: Check, label: 'Quiz' },
                 ].map((tab) => (
@@ -247,6 +252,17 @@
               setFlipped(prev => ({ ...prev, [id]: !prev[id] }));
             };
 
+            // Function to handle word pronunciation
+            const playWord = (e, text) => {
+                e.stopPropagation(); // Stop click from flipping the card
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US';
+                    window.speechSynthesis.speak(utterance);
+                }
+            };
+
             return (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {vocabList.map((vocab) => (
@@ -257,9 +273,18 @@
                   >
                     <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d shadow-md rounded-xl ${flipped[vocab.id] ? 'rotate-y-180' : ''}`}>
                       {/* Front */}
-                      <div className="absolute w-full h-full bg-white rounded-xl flex flex-col items-center justify-center backface-hidden border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors">
+                      <div className="absolute w-full h-full bg-white rounded-xl flex flex-col items-center justify-center backface-hidden border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors relative">
+                        {/* Audio Button on Front */}
+                        <button 
+                            onClick={(e) => playWord(e, vocab.word)}
+                            className="absolute top-3 right-3 p-2 bg-emerald-100 text-emerald-600 rounded-full hover:bg-emerald-200 transition-colors z-10"
+                            title="Listen"
+                        >
+                            <Volume1 size={18} />
+                        </button>
+
                         <span className="text-sm text-emerald-500 font-bold mb-2 uppercase tracking-wider">Word</span>
-                        <h3 className="text-3xl font-bold text-gray-800">{vocab.word}</h3>
+                        <h3 className="text-2xl font-bold text-gray-800 text-center px-2">{vocab.word}</h3>
                         <p className="text-gray-400 mt-2 font-mono">{vocab.part}</p>
                         <span className="absolute bottom-3 text-xs text-gray-400">Tap to flip</span>
                       </div>
@@ -268,7 +293,7 @@
                       <div className="absolute w-full h-full bg-emerald-600 text-white rounded-xl flex flex-col items-center justify-center backface-hidden rotate-y-180 p-4 text-center">
                         <span className="text-sm text-emerald-200 font-bold mb-2 uppercase tracking-wider">Definition</span>
                         <p className="text-lg font-medium mb-2">{vocab.zh}</p>
-                        <p className="text-sm opacity-90">{vocab.def}</p>
+                        <p className="text-xs opacity-90 overflow-y-auto max-h-[60px]">{vocab.def}</p>
                       </div>
                     </div>
                   </div>
@@ -476,8 +501,8 @@
               <Header />
               
               <main className="animate-slide-up">
-                {activeTab === 'story' && <StorySection />}
                 {activeTab === 'vocab' && <FlashcardSection />}
+                {activeTab === 'story' && <StorySection />}
                 {activeTab === 'gapfill' && <GapFillSection />}
                 {activeTab === 'quiz' && <QuizSection />}
               </main>
