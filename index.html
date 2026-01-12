@@ -61,7 +61,7 @@
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
-        import { Volume2, BookOpen, Brain, PenTool, ArrowRight, RotateCcw, Check, Star, Mic, Play, Pause, Volume1, Ear, Keyboard, Headphones } from 'lucide-react';
+        import { Volume2, BookOpen, Brain, PenTool, ArrowRight, RotateCcw, Check, Star, Mic, Play, Pause, Volume1, Ear, Keyboard, Headphones, Info } from 'lucide-react';
 
         const App = () => {
           const [activeTab, setActiveTab] = useState('vocab');
@@ -73,7 +73,6 @@
             translation: "灰鸚鵡常被稱為鳥類界的愛因斯坦。牠們擁有柔軟的灰色羽毛和明亮的眼睛，外表美麗，但真正特別的是牠們的大腦。這些鸚鵡記憶力極佳，能模仿人類的聲音，不僅能複製詞彙，還能模仿情感。一隻名叫 Alex 的著名鸚鵡透過數數和辨識顏色證明了牠們有多聰明。在非洲傳說中，這些鳥被視為與神溝通的信使。然而，今天牠們因棲息地喪失和非法交易而面臨危險。我們需要在為時已晚之前保護這些聰明的夥伴。"
           };
 
-          // Update: Words are now lowercase
           const vocabList = [
             { id: 1, word: "imitate", part: "v.", def: "To copy the way someone speaks or moves.", zh: "模仿" },
             { id: 2, word: "capacity", part: "n.", def: "The ability to understand or do something.", zh: "能力；容量" },
@@ -86,7 +85,6 @@
             { id: 9, word: "stand out", part: "phr.", def: "To be very easy to see or notice.", zh: "突出；顯眼" }
           ];
 
-          // Updated Gap Fill Data with Chinese translations
           const gapFillData = [
             {
               id: 1,
@@ -125,6 +123,7 @@
             }
           ];
 
+          // Updated Quiz Data with Explanation
           const quizData = [
             {
               id: 1,
@@ -135,7 +134,8 @@
                 "Its sharp memory and learning ability.",
                 "Its large size."
               ],
-              correct: 2
+              correct: 2,
+              explanation: "文中提到：'What truly makes it stand out, however, is its sharp memory and remarkable learning ability.' (然而，真正讓牠與眾不同的是敏銳的記憶力和卓越的學習能力。)"
             },
             {
               id: 2,
@@ -146,7 +146,8 @@
                 "A god in African mythology.",
                 "A famous parrot trainer."
               ],
-              correct: 1
+              correct: 1,
+              explanation: "文中提到：'A famous parrot named Alex proved how smart they are by counting and recognizing colors.' (一隻名叫 Alex 的著名鸚鵡透過數數和辨識顏色證明了牠們有多聰明。)"
             },
             {
               id: 3,
@@ -157,7 +158,8 @@
                 "There are too many of them.",
                 "They are attacking other birds."
               ],
-              correct: 0
+              correct: 0,
+              explanation: "文中提到：'today they are in danger due to habitat loss and illegal trading.' (如今牠們因棲息地喪失和非法交易而面臨危險。)"
             }
           ];
 
@@ -239,7 +241,6 @@
                         
                         <div className="text-center px-4">
                             <span className="block text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">Vocabulary</span>
-                            {/* Updated to lowercase via data, just displaying as is */}
                             <h3 className="text-3xl font-extrabold text-gray-800 tracking-tight">{vocab.word}</h3>
                             <div className="mt-4 flex items-center justify-center gap-2 text-gray-400 text-xs">
                                 <RotateCcw size={12} />
@@ -261,10 +262,10 @@
             );
           };
 
-          // --- Gap Fill Section with Spelling, Listening & Translation ---
+          // --- Gap Fill Section ---
           const GapFillSection = () => {
             const [inputs, setInputs] = useState({});
-            const [status, setStatus] = useState({}); // 'correct' | 'incorrect' | null
+            const [status, setStatus] = useState({}); 
             const [playingId, setPlayingId] = useState(null);
 
             const handleInputChange = (id, value) => {
@@ -312,7 +313,6 @@
                 {gapFillData.map((item) => (
                   <div key={item.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md">
                     
-                    {/* Audio Control */}
                     <button 
                         onClick={() => playAudio(item.id, item.fullAudio)}
                         className={`mb-4 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all w-full sm:w-auto justify-center ${
@@ -325,14 +325,12 @@
                         {playingId === item.id ? "Listening..." : "Listen to Sentence"}
                     </button>
 
-                    {/* Sentence with Gap */}
                     <div className="text-lg text-gray-800 font-medium leading-relaxed mb-4">
                         {item.text.split('_____')[0]}
                         <span className="inline-block px-2 py-0.5 bg-gray-100 rounded text-gray-400 font-mono text-base border border-dashed border-gray-300 mx-1">MISSING WORD</span>
                         {item.text.split('_____')[1]}
                     </div>
 
-                    {/* Input Area */}
                     <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center mt-2">
                         <div className="relative flex-grow">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
@@ -372,7 +370,6 @@
                         </button>
                     </div>
                     
-                    {/* Feedback & Translation Section - Updated */}
                     <div className="min-h-[1.5rem] mt-2">
                          {status[item.id] === 'incorrect' && (
                             <p className="text-sm text-red-500 font-medium pl-1">Not quite right. Listen again!</p>
@@ -394,7 +391,8 @@
           const ListeningComprehensionSection = () => {
             const [isPlaying, setIsPlaying] = useState(false);
             const [rate, setRate] = useState(0.9);
-            const [showText, setShowText] = useState(true); // Default show text, toggleable
+            // Default changed to false to hide transcript initially
+            const [showText, setShowText] = useState(false); 
             const [showTranslation, setShowTranslation] = useState(false);
             
             // Quiz State
@@ -488,9 +486,10 @@
 
                     <button 
                         onClick={() => setShowText(!showText)}
-                        className="text-sm font-semibold text-emerald-600 hover:text-emerald-800 underline decoration-dotted"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
                     >
-                        {showText ? "Hide Text" : "Show Text"}
+                        {showText ? <ArrowRight className="rotate-90 transition-transform" size={16}/> : <ArrowRight className="transition-transform" size={16}/>}
+                        {showText ? "Hide Transcript" : "Show Transcript"}
                     </button>
                   </div>
 
@@ -518,8 +517,10 @@
                     </div>
                   )}
                   {!showText && (
-                      <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300 text-gray-400 italic">
-                          Text hidden. Listen carefully to the audio!
+                      <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300 text-gray-400 flex flex-col items-center gap-2">
+                          <Ear size={48} className="opacity-50"/>
+                          <p className="font-medium">Transcript hidden</p>
+                          <p className="text-sm">Listen carefully to the audio to answer the questions below!</p>
                       </div>
                   )}
                 </div>
@@ -569,6 +570,18 @@
                                 );
                                 })}
                             </div>
+
+                            {/* Explanation Block (Shows after submission) */}
+                            {isSubmitted && (
+                                <div className="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg text-sm text-blue-800 animate-fade-in flex items-start gap-2">
+                                    <Info size={18} className="mt-0.5 flex-shrink-0 text-blue-500"/>
+                                    <div>
+                                        <span className="font-bold block mb-1">解析 (Explanation):</span>
+                                        {q.explanation}
+                                    </div>
+                                </div>
+                            )}
+
                             </div>
                         );
                         })}
