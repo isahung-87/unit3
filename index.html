@@ -19,11 +19,21 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
-        .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 600; }
-        .tab-inactive { color: #6b7280; }
-        .card-hover { transition: transform 0.2s; }
-        .card-hover:hover { transform: translateY(-2px); }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background-color: #f8fafc; color: #334155; }
+        
+        /* Custom Scrollbar for Sidebar */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .highlight-text { background-color: #fef3c7; transition: background-color 0.3s; }
+        .vocab-word { cursor: pointer; border-bottom: 2px solid #e2e8f0; transition: all 0.2s; }
+        .vocab-word:hover { border-bottom-color: #0d9488; color: #0d9488; background-color: #f0fdfa; }
+
+        /* Animation */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
     </style>
 </head>
 <body>
@@ -35,16 +45,18 @@
         // --- 資料來源 (Data Source) ---
         const ARTICLE = {
             title: "The Grey Parrot: A Brilliant Bird with a Lot to Say",
-            content: `Often called the most intelligent bird in the world, the grey parrot charms with its soft feathers and curious eyes. What truly makes it stand out, however, is its sharp memory and remarkable learning ability. One of these parrots’ most impressive talents is mimicking human voices. They can learn hundreds of words and also imitate tone and emotion. Scientists have even studied their problem-solving skills and learning capacity. The most famous example, a parrot named Alex, could count, recognize colors, and answer simple questions—proving that these birds understand far more than once believed. Native to Africa, the parrot has long been celebrated in African mythology. Among the Yoruba people, grey parrots are linked to royalty and spiritual messages, with their feathers used in rituals to communicate with the gods. In Ashanti folklore, they serve as messengers between the living and the spirit world, a sign of deep cultural respect. Today, though still honored in legends, grey parrots face threats from habitat loss and illegal trade that have caused their numbers in the wild to plummet. While they remain beloved companions in homes worldwide, these brilliant birds need urgent protection to secure their future.`
+            subtitle: "灰鸚鵡：動物界最聰明的話匣子",
+            content_en: `Often called the most intelligent bird in the world, the grey parrot charms with its soft feathers and curious eyes. What truly makes it stand out, however, is its sharp memory and remarkable learning ability. One of these parrots’ most impressive talents is mimicking human voices. They can learn hundreds of words and also imitate tone and emotion. Scientists have even studied their problem-solving skills and learning capacity. The most famous example, a parrot named Alex, could count, recognize colors, and answer simple questions—proving that these birds understand far more than once believed. Native to Africa, the parrot has long been celebrated in African mythology. Among the Yoruba people, grey parrots are linked to royalty and spiritual messages, with their feathers used in rituals to communicate with the gods. In Ashanti folklore, they serve as messengers between the living and the spirit world, a sign of deep cultural respect. Today, though still honored in legends, grey parrots face threats from habitat loss and illegal trade that have caused their numbers in the wild to plummet. While they remain beloved companions in homes worldwide, these brilliant birds need urgent protection to secure their future.`,
+            content_zh: `灰鸚鵡常被稱為世界上最聰明的鳥類，以其柔軟的羽毛和好奇的眼神迷倒眾人。然而，真正讓牠與眾不同的是其敏銳的記憶力和非凡的學習能力。這些鸚鵡最令人印象深刻的才能之一是模仿人類的聲音。牠們可以學習數百個單字，還能模仿語氣和情感。科學家甚至研究了牠們解決問題的技巧和學習能力。最著名的例子是一隻名叫 Alex 的鸚鵡，牠能數數、辨識顏色並回答簡單問題——證明這些鳥類的理解力遠超乎人們過去的想像。原產於非洲，這種鸚鵡長期以來在非洲神話中備受推崇。在約魯巴人（Yoruba）中，灰鸚鵡與皇室和靈性訊息有關，其羽毛被用於儀式中與神靈溝通。在阿散蒂（Ashanti）民間傳說中，牠們擔任生者與靈界之間的信使，是深厚文化尊重的象徵。如今，儘管在傳說中仍受尊敬，灰鸚鵡卻面臨棲息地喪失和非法貿易的威脅，導致野生數量急劇下降。雖然牠們在全球家庭中仍是受人喜愛的伴侶，但這些聰明的鳥類需要緊急保護以確保牠們的未來。`
         };
 
         const VOCABULARY = [
-            { word: "mimic", def: "To copy the way someone speaks or moves.", example: "The bird can mimic a ringing phone." },
-            { word: "capacity", def: "The ability to understand or do something.", example: "She has a great capacity for learning languages." },
-            { word: "mythology", def: "Ancient stories and beliefs.", example: "Greek mythology is full of gods and heroes." },
-            { word: "ritual", def: "A ceremony that is always performed in the same way.", example: "Morning coffee is my daily ritual." },
-            { word: "plummet", def: "To fall very quickly and suddenly.", example: "Temperatures plummeted last night." },
-            { word: "companion", def: "A person or animal you spend time with.", example: "Dogs are loyal companions." }
+            { word: "mimic", def: "v. 模仿", def_en: "To copy the way someone speaks or moves.", example: "The bird can mimic a ringing phone." },
+            { word: "capacity", def: "n. 能力；容量", def_en: "The ability to understand or do something.", example: "She has a great capacity for learning languages." },
+            { word: "mythology", def: "n. 神話", def_en: "Ancient stories and beliefs.", example: "Greek mythology is full of gods and heroes." },
+            { word: "ritual", def: "n. 儀式", def_en: "A ceremony that is always performed in the same way.", example: "Morning coffee is my daily ritual." },
+            { word: "plummet", def: "v. 暴跌；急墜", def_en: "To fall very quickly and suddenly.", example: "Temperatures plummeted last night." },
+            { word: "companion", def: "n. 同伴", def_en: "A person or animal you spend time with.", example: "Dogs are loyal companions." }
         ];
 
         const QUIZ_QUESTIONS = [
@@ -97,33 +109,42 @@
         const DICTATION_SENTENCE = "The grey parrot is often called the most intelligent bird in the world.";
 
         // --- icons ---
-        const Icon = ({ name, size = 20, color = "currentColor" }) => {
+        const Icon = ({ name, size = 20, color = "currentColor", className = "" }) => {
             useEffect(() => {
                 lucide.createIcons();
             }, [name]);
-            return <i data-lucide={name} width={size} height={size} style={{ color }}></i>;
+            return <i data-lucide={name} width={size} height={size} style={{ color }} className={className}></i>;
         };
 
         // --- Components ---
 
-        const Header = () => (
-            <header className="bg-teal-600 text-white p-6 shadow-md">
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold flex items-center gap-2">
-                            <Icon name="headphones" size={28} />
-                            English Listening Lab
-                        </h1>
-                        <p className="text-teal-100 text-sm mt-1">Topic: {ARTICLE.title}</p>
-                    </div>
-                    <div className="text-xs bg-teal-700 px-3 py-1 rounded-full">
-                        Level: Intermediate
+        const Navbar = () => (
+            <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between h-16">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-teal-600 p-2 rounded-lg text-white">
+                                <Icon name="graduation-cap" size={24} color="white" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-gray-900 tracking-tight">Listening Lab</h1>
+                                <span className="text-xs text-gray-500 font-medium">Unit 1106</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <span className="hidden md:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-teal-50 text-teal-700">
+                                Intermediate
+                            </span>
+                            <a href="#" className="text-gray-400 hover:text-gray-600">
+                                <Icon name="github" size={20} />
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </header>
+            </nav>
         );
 
-        const AudioControls = ({ text, isPlaying, setIsPlaying, rate, setRate, onEnd }) => {
+        const StickyPlayer = ({ text, isPlaying, setIsPlaying, rate, setRate, onEnd }) => {
             const speak = () => {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
@@ -143,60 +164,87 @@
             };
 
             const togglePlay = () => {
-                if (isPlaying) {
-                    stop();
-                } else {
-                    speak();
-                }
+                if (isPlaying) stop();
+                else speak();
             };
 
             return (
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-wrap items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <button 
-                            onClick={togglePlay}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold transition-colors ${isPlaying ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-teal-600 text-white hover:bg-teal-700'}`}
-                        >
-                            <Icon name={isPlaying ? "pause" : "play"} />
-                            {isPlaying ? "Pause" : "Listen"}
-                        </button>
-                        
-                        <button 
-                            onClick={stop}
-                            className="p-2 text-gray-500 hover:text-red-500 rounded-full hover:bg-gray-100"
-                            title="Stop"
-                        >
-                            <Icon name="square" size={18} />
-                        </button>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-lg">
-                        <Icon name="gauge" size={16} />
-                        <span>Speed:</span>
-                        {[0.8, 1.0, 1.2].map(r => (
-                            <button
-                                key={r}
-                                onClick={() => {
-                                    setRate(r);
-                                    if(isPlaying) {
-                                        window.speechSynthesis.cancel();
-                                        setTimeout(() => document.getElementById('play-btn')?.click(), 100); 
-                                        // Simple hack: re-trigger play manually or just let user click play again. 
-                                        // Better UX: stop, set rate.
-                                        setIsPlaying(false); 
-                                    }
-                                }}
-                                className={`px-2 py-0.5 rounded ${rate === r ? 'bg-teal-600 text-white' : 'hover:bg-gray-200'}`}
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 z-50">
+                    <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                             <button 
+                                onClick={togglePlay}
+                                className={`w-12 h-12 flex items-center justify-center rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95 ${
+                                    isPlaying ? 'bg-red-500 text-white' : 'bg-teal-600 text-white'
+                                }`}
                             >
-                                {r}x
+                                <Icon name={isPlaying ? "pause" : "play"} size={24} color="white" />
                             </button>
-                        ))}
+                            <div className="hidden sm:block">
+                                <p className="text-xs text-gray-500 uppercase font-semibold">Audio Player</p>
+                                <p className="text-sm font-medium text-gray-800">The Grey Parrot</p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                            {[0.8, 1.0, 1.2].map(r => (
+                                <button
+                                    key={r}
+                                    onClick={() => {
+                                        setRate(r);
+                                        if(isPlaying) {
+                                            window.speechSynthesis.cancel();
+                                            setTimeout(() => document.getElementById('play-btn')?.click(), 50);
+                                            setIsPlaying(false);
+                                        }
+                                    }}
+                                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                                        rate === r ? 'bg-white text-teal-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                    }`}
+                                >
+                                    {r}x
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             );
         };
 
-        const VocabularyTab = () => {
+        const VocabCard = ({ item, playWord }) => (
+            <div className="group bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md transition-all duration-200">
+                <div className="flex justify-between items-start mb-2">
+                    <div>
+                        <h3 className="font-bold text-lg text-teal-800">{item.word}</h3>
+                        <p className="text-xs text-gray-500">{item.def}</p>
+                    </div>
+                    <button 
+                        onClick={() => playWord(item.word)}
+                        className="p-2 bg-gray-50 text-gray-400 rounded-full group-hover:bg-teal-50 group-hover:text-teal-600 transition-colors"
+                    >
+                        <Icon name="volume-2" size={16} />
+                    </button>
+                </div>
+                <p className="text-sm text-gray-600 border-l-2 border-teal-200 pl-3 italic">
+                    {item.example}
+                </p>
+            </div>
+        );
+
+        const App = () => {
+            const [isPlaying, setIsPlaying] = useState(false);
+            const [rate, setRate] = useState(1.0);
+            const [showZh, setShowZh] = useState(false);
+            const [activeSection, setActiveSection] = useState('vocab'); // 'vocab' or 'quiz'
+            
+            // Dictation state
+            const [dictationInput, setDictationInput] = useState("");
+            const [dictationStatus, setDictationStatus] = useState(null);
+
+            // Quiz state
+            const [quizAnswers, setQuizAnswers] = useState({});
+            const [showQuizResult, setShowQuizResult] = useState(false);
+
             const playWord = (text) => {
                 window.speechSynthesis.cancel();
                 const u = new SpeechSynthesisUtterance(text);
@@ -204,275 +252,202 @@
                 window.speechSynthesis.speak(u);
             };
 
+            const checkDictation = (e) => {
+                e.preventDefault();
+                const cleanInput = dictationInput.trim().toLowerCase().replace(/[.,]/g, "");
+                const cleanTarget = DICTATION_SENTENCE.trim().toLowerCase().replace(/[.,]/g, "");
+                setDictationStatus(cleanInput === cleanTarget ? 'correct' : 'incorrect');
+            };
+
+            const handleQuizOption = (qId, optIdx) => {
+                if(showQuizResult) return;
+                setQuizAnswers(prev => ({...prev, [qId]: optIdx}));
+            };
+
+            const submitQuiz = () => setShowQuizResult(true);
+            const resetQuiz = () => { setShowQuizResult(false); setQuizAnswers({}); };
+
             return (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {VOCABULARY.map((item, idx) => (
-                        <div key={idx} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 card-hover group">
-                            <div className="flex justify-between items-start">
-                                <h3 className="text-xl font-bold text-gray-800">{item.word}</h3>
-                                <button 
-                                    onClick={() => playWord(item.word)}
-                                    className="p-2 bg-teal-50 text-teal-600 rounded-full hover:bg-teal-100 transition-colors"
-                                >
-                                    <Icon name="volume-2" size={20} />
-                                </button>
+                <div className="min-h-screen bg-[#f8fafc] pb-24">
+                    <Navbar />
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            
+                            {/* LEFT COLUMN: Article (7 cols) */}
+                            <div className="lg:col-span-7 space-y-6">
+                                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                                    <div className="bg-gradient-to-r from-teal-600 to-teal-500 p-8 text-white relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
+                                            <Icon name="feather" size={150} />
+                                        </div>
+                                        <h2 className="text-3xl font-bold mb-2 relative z-10">{ARTICLE.title}</h2>
+                                        <p className="text-teal-100 text-lg relative z-10">{ARTICLE.subtitle}</p>
+                                    </div>
+                                    
+                                    <div className="p-8">
+                                        <div className="flex justify-end mb-6">
+                                            <button 
+                                                onClick={() => setShowZh(!showZh)}
+                                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                    showZh ? 'bg-teal-50 text-teal-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                }`}
+                                            >
+                                                <Icon name="languages" size={16} />
+                                                {showZh ? "Hide Chinese" : "Show Chinese"}
+                                            </button>
+                                        </div>
+
+                                        <div className="prose prose-lg max-w-none text-gray-700 leading-loose font-serif">
+                                            {ARTICLE.content_en.split('. ').map((sentence, idx) => (
+                                                <span key={idx} className="hover:bg-yellow-50 rounded transition-colors duration-200">
+                                                    {sentence}.{" "}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        {showZh && (
+                                            <div className="mt-8 pt-8 border-t border-gray-100">
+                                                <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Translation</h4>
+                                                <div className="text-gray-600 leading-loose">
+                                                    {ARTICLE.content_zh}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Dictation Block */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                                            <Icon name="pen-tool" size={24} />
+                                        </div>
+                                        <h3 className="text-xl font-bold text-gray-800">Dictation Challenge</h3>
+                                    </div>
+                                    
+                                    <p className="text-gray-500 mb-4 text-sm">Listen and type the sentence:</p>
+                                    <div className="flex gap-2 mb-4">
+                                        <button onClick={() => playWord(DICTATION_SENTENCE)} className="bg-purple-600 text-white p-2 rounded-full hover:bg-purple-700">
+                                            <Icon name="play" size={16} fill="white" />
+                                        </button>
+                                    </div>
+
+                                    <form onSubmit={checkDictation} className="relative">
+                                        <input 
+                                            type="text" 
+                                            value={dictationInput}
+                                            onChange={(e) => { setDictationInput(e.target.value); setDictationStatus(null); }}
+                                            className={`w-full p-4 pr-12 rounded-xl border-2 bg-gray-50 focus:bg-white transition-all outline-none ${
+                                                dictationStatus === 'correct' ? 'border-green-500 ring-2 ring-green-100' :
+                                                dictationStatus === 'incorrect' ? 'border-red-500 ring-2 ring-red-100' :
+                                                'border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-100'
+                                            }`}
+                                            placeholder="Type what you hear..." 
+                                        />
+                                        <button type="submit" className="absolute right-3 top-3 p-2 bg-white rounded-lg shadow-sm text-gray-400 hover:text-purple-600">
+                                            <Icon name="arrow-right" size={20} />
+                                        </button>
+                                    </form>
+                                    {dictationStatus === 'correct' && <p className="mt-2 text-green-600 text-sm font-bold">✨ Correct! Great job.</p>}
+                                    {dictationStatus === 'incorrect' && <p className="mt-2 text-red-500 text-sm">Not quite. Try again!</p>}
+                                </div>
                             </div>
-                            <p className="text-sm text-gray-500 mt-1 italic">{item.def}</p>
-                            <div className="mt-3 text-sm bg-gray-50 p-2 rounded text-gray-700 border-l-4 border-teal-400">
-                                "{item.example}"
+
+                            {/* RIGHT COLUMN: Tools (5 cols) */}
+                            <div className="lg:col-span-5 space-y-6">
+                                
+                                {/* Tools Switcher */}
+                                <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-200 flex">
+                                    <button 
+                                        onClick={() => setActiveSection('vocab')}
+                                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
+                                            activeSection === 'vocab' ? 'bg-teal-50 text-teal-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                        }`}
+                                    >
+                                        Vocabulary
+                                    </button>
+                                    <button 
+                                        onClick={() => setActiveSection('quiz')}
+                                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
+                                            activeSection === 'quiz' ? 'bg-teal-50 text-teal-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                                        }`}
+                                    >
+                                        Comprehension
+                                    </button>
+                                </div>
+
+                                {/* Dynamic Content Area */}
+                                <div className="fade-in min-h-[500px]">
+                                    {activeSection === 'vocab' ? (
+                                        <div className="space-y-4">
+                                            {VOCABULARY.map((item, idx) => (
+                                                <VocabCard key={idx} item={item} playWord={playWord} />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                                            <div className="p-6 space-y-8">
+                                                {QUIZ_QUESTIONS.map((q, qIdx) => {
+                                                    const uAns = quizAnswers[q.id];
+                                                    return (
+                                                        <div key={q.id}>
+                                                            <p className="font-bold text-gray-800 mb-3 text-sm flex gap-2">
+                                                                <span className="text-teal-500">{qIdx + 1}.</span> {q.question}
+                                                            </p>
+                                                            <div className="space-y-2">
+                                                                {q.options.map((opt, oIdx) => (
+                                                                    <div 
+                                                                        key={oIdx}
+                                                                        onClick={() => handleQuizOption(q.id, oIdx)}
+                                                                        className={`p-3 rounded-lg text-sm cursor-pointer border transition-all ${
+                                                                            showQuizResult 
+                                                                                ? (oIdx === q.correct ? 'bg-green-50 border-green-500 text-green-700' : (uAns === oIdx ? 'bg-red-50 border-red-500 text-red-700' : 'border-gray-100 opacity-50'))
+                                                                                : (uAns === oIdx ? 'bg-teal-50 border-teal-500 text-teal-700 font-medium' : 'border-gray-100 hover:bg-gray-50')
+                                                                        }`}
+                                                                    >
+                                                                        {opt}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+
+                                                <div className="pt-4 border-t">
+                                                    {!showQuizResult ? (
+                                                        <button 
+                                                            onClick={submitQuiz}
+                                                            disabled={Object.keys(quizAnswers).length < QUIZ_QUESTIONS.length}
+                                                            className="w-full bg-teal-600 text-white py-3 rounded-xl font-bold hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                        >
+                                                            Check Answers
+                                                        </button>
+                                                    ) : (
+                                                        <div className="text-center">
+                                                            <p className="font-bold text-gray-800 mb-2">
+                                                                Score: {QUIZ_QUESTIONS.filter(q => quizAnswers[q.id] === q.correct).length} / {QUIZ_QUESTIONS.length}
+                                                            </p>
+                                                            <button onClick={resetQuiz} className="text-teal-600 text-sm font-medium hover:underline">Reset Quiz</button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
                             </div>
                         </div>
-                    ))}
-                </div>
-            );
-        };
+                    </div>
 
-        const ListeningTab = () => {
-            const [isPlaying, setIsPlaying] = useState(false);
-            const [rate, setRate] = useState(1.0);
-            const [showText, setShowText] = useState(false);
-
-            // Cleanup audio on unmount
-            useEffect(() => {
-                return () => window.speechSynthesis.cancel();
-            }, []);
-
-            return (
-                <div className="max-w-3xl mx-auto">
-                    <AudioControls 
-                        text={ARTICLE.content} 
+                    <StickyPlayer 
+                        text={ARTICLE.content_en} 
                         isPlaying={isPlaying} 
                         setIsPlaying={setIsPlaying}
                         rate={rate}
                         setRate={setRate}
                     />
-                    
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <div className="flex justify-between items-center mb-4 border-b pb-4">
-                            <h3 className="font-bold text-gray-700 flex items-center gap-2">
-                                <Icon name="file-text" size={18} />
-                                Transcript
-                            </h3>
-                            <button 
-                                onClick={() => setShowText(!showText)}
-                                className="text-sm text-teal-600 hover:underline flex items-center gap-1"
-                            >
-                                {showText ? <><Icon name="eye-off" size={14}/> Hide</> : <><Icon name="eye" size={14}/> Show</>}
-                            </button>
-                        </div>
-                        
-                        <div className={`leading-loose text-gray-800 transition-all duration-300 ${showText ? 'opacity-100' : 'opacity-0 h-32 overflow-hidden filter blur-sm select-none'}`}>
-                            {ARTICLE.content}
-                        </div>
-                        
-                        {!showText && (
-                            <div className="text-center mt-[-3rem] relative z-10">
-                                <span className="bg-white/80 px-4 py-2 rounded-full text-sm text-gray-500 shadow-sm border">
-                                    Click "Show" to read the text
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        };
-
-        const QuizTab = () => {
-            const [answers, setAnswers] = useState({});
-            const [showResult, setShowResult] = useState(false);
-
-            const handleOptionClick = (qId, optionIdx) => {
-                if (showResult) return;
-                setAnswers(prev => ({...prev, [qId]: optionIdx}));
-            };
-
-            const calculateScore = () => {
-                let score = 0;
-                QUIZ_QUESTIONS.forEach(q => {
-                    if (answers[q.id] === q.correct) score++;
-                });
-                return score;
-            };
-
-            return (
-                <div className="max-w-2xl mx-auto space-y-6">
-                    {QUIZ_QUESTIONS.map((q, idx) => {
-                        const userAnswer = answers[q.id];
-                        const isCorrect = userAnswer === q.correct;
-                        
-                        return (
-                            <div key={q.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                                <h4 className="font-bold text-gray-800 mb-4 flex gap-2">
-                                    <span className="bg-teal-100 text-teal-800 px-2 rounded">{idx + 1}</span>
-                                    {q.question}
-                                </h4>
-                                <div className="space-y-2">
-                                    {q.options.map((opt, optIdx) => (
-                                        <button
-                                            key={optIdx}
-                                            onClick={() => handleOptionClick(q.id, optIdx)}
-                                            className={`w-full text-left p-3 rounded-lg border transition-all ${
-                                                showResult 
-                                                    ? (optIdx === q.correct 
-                                                        ? "bg-green-100 border-green-500 text-green-800 font-medium" 
-                                                        : (userAnswer === optIdx ? "bg-red-100 border-red-500 text-red-800" : "border-gray-200 opacity-60"))
-                                                    : (userAnswer === optIdx 
-                                                        ? "bg-teal-50 border-teal-500 text-teal-700" 
-                                                        : "border-gray-200 hover:bg-gray-50")
-                                            }`}
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <span>{opt}</span>
-                                                {showResult && optIdx === q.correct && <Icon name="check-circle" size={16} color="green" />}
-                                                {showResult && userAnswer === optIdx && userAnswer !== q.correct && <Icon name="x-circle" size={16} color="red" />}
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        );
-                    })}
-
-                    <div className="flex justify-center pt-4">
-                        {!showResult ? (
-                            <button 
-                                onClick={() => setShowResult(true)}
-                                disabled={Object.keys(answers).length < QUIZ_QUESTIONS.length}
-                                className="bg-teal-600 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transform transition active:scale-95"
-                            >
-                                Submit Answers
-                            </button>
-                        ) : (
-                            <div className="text-center animate-bounce-in">
-                                <p className="text-2xl font-bold text-gray-800 mb-2">
-                                    Your Score: <span className="text-teal-600">{calculateScore()} / {QUIZ_QUESTIONS.length}</span>
-                                </p>
-                                <button 
-                                    onClick={() => { setShowResult(false); setAnswers({}); }}
-                                    className="text-gray-500 underline hover:text-teal-600"
-                                >
-                                    Try Again
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        };
-
-        const DictationTab = () => {
-            const [isPlaying, setIsPlaying] = useState(false);
-            const [userInput, setUserInput] = useState("");
-            const [check, setCheck] = useState(null); // null, 'correct', 'incorrect'
-
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                const cleanInput = userInput.trim().toLowerCase().replace(/[.,]/g, "");
-                const cleanTarget = DICTATION_SENTENCE.trim().toLowerCase().replace(/[.,]/g, "");
-                
-                if (cleanInput === cleanTarget) {
-                    setCheck('correct');
-                } else {
-                    setCheck('incorrect');
-                }
-            };
-
-            return (
-                <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center">
-                    <Icon name="pen-tool" size={48} className="mx-auto text-teal-500 mb-4" />
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">Dictation Challenge</h3>
-                    <p className="text-gray-500 mb-6">Listen to the sentence and type exactly what you hear.</p>
-
-                    <div className="flex justify-center mb-6">
-                        <AudioControls 
-                            text={DICTATION_SENTENCE} 
-                            isPlaying={isPlaying} 
-                            setIsPlaying={setIsPlaying}
-                            rate={0.8} // Default slower for dictation
-                            setRate={() => {}} // Disable rate change for simplicity here
-                        />
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <textarea 
-                            value={userInput}
-                            onChange={(e) => { setUserInput(e.target.value); setCheck(null); }}
-                            className={`w-full p-4 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-teal-200 transition-colors ${
-                                check === 'correct' ? 'border-green-500 bg-green-50' : 
-                                check === 'incorrect' ? 'border-red-500 bg-red-50' : 'border-gray-200'
-                            }`}
-                            placeholder="Type the sentence here..."
-                            rows="3"
-                        ></textarea>
-                        
-                        <button 
-                            type="submit"
-                            className="bg-teal-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-teal-700"
-                        >
-                            Check Answer
-                        </button>
-                    </form>
-
-                    {check === 'correct' && (
-                        <div className="mt-4 text-green-600 font-bold flex items-center justify-center gap-2">
-                            <Icon name="check" /> Perfect! Correct.
-                        </div>
-                    )}
-                    {check === 'incorrect' && (
-                        <div className="mt-4 text-red-500">
-                            <p className="font-bold flex items-center justify-center gap-2"><Icon name="x" /> Not quite.</p>
-                            <p className="text-sm text-gray-500 mt-1">Hint: Check your spelling and punctuation.</p>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        const App = () => {
-            const [activeTab, setActiveTab] = useState('listening');
-
-            const tabs = [
-                { id: 'vocab', label: '1. Vocabulary', icon: 'book-open' },
-                { id: 'listening', label: '2. Listening', icon: 'headphones' },
-                { id: 'quiz', label: '3. Quiz', icon: 'help-circle' },
-                { id: 'dictation', label: '4. Dictation', icon: 'pencil' },
-            ];
-
-            return (
-                <div className="min-h-screen pb-12">
-                    <Header />
-                    
-                    <main className="max-w-4xl mx-auto px-4 mt-8">
-                        {/* Tab Navigation */}
-                        <div className="flex flex-wrap border-b border-gray-200 mb-8">
-                            {tabs.map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`flex items-center gap-2 px-6 py-4 transition-all ${
-                                        activeTab === tab.id 
-                                            ? 'tab-active' 
-                                            : 'tab-inactive hover:text-gray-800'
-                                    }`}
-                                >
-                                    <Icon name={tab.icon} size={18} />
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Content Area */}
-                        <div className="animate-fade-in">
-                            {activeTab === 'vocab' && <VocabularyTab />}
-                            {activeTab === 'listening' && <ListeningTab />}
-                            {activeTab === 'quiz' && <QuizTab />}
-                            {activeTab === 'dictation' && <DictationTab />}
-                        </div>
-                    </main>
-
-                    <footer className="text-center text-gray-400 text-sm mt-12 py-6 border-t">
-                        <p>© 2025 English Listening Lab. Generated for Educational Use.</p>
-                    </footer>
                 </div>
             );
         };
